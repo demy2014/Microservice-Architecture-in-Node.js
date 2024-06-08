@@ -1,0 +1,62 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: microservice
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies and test API service
+      working-directory: ./api-service
+      run: |
+        npm install
+        npm test
+
+    - name: Install dependencies and test Auth service
+      working-directory: ./auth-service
+      run: |
+        npm install
+        npm test
+
+    - name: Install dependencies and build Frontend
+      working-directory: ./frontend
+      run: |
+        npm install
+        npm run build
+
+    - name: Run Cypress tests
+      run: |
+        npx cypress run
+
+    - name: Build and Push Docker Images
+      run: |
+        echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+        docker-compose -f docker-compose.yml build
+        docker-compose -f docker-compose.yml push

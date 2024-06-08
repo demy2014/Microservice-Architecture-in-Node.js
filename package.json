@@ -1,0 +1,26 @@
+{
+    "name": "api-service",
+    "version": "1.0.0",
+
+    "type": "commonjs",
+  
+ 
+
+    "scripts": {
+        "type": "commonjs",
+        "start": "node app.js"
+     
+    },
+    "dependencies": {
+        "chai-http": "^5.0.0",
+        "chi": "^0.0.10",
+        "express": "^4.17.1",
+        "pg": "^8.5.1"
+    },
+    "devDependencies": {
+        "@faker-js/faker": "^8.4.1",
+        "chai": "^4.4.1",
+        "faker": "^5.5.3",
+        "mocha": "^10.4.0"
+    }
+}
